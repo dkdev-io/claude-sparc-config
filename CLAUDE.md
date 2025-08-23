@@ -397,6 +397,9 @@ When user says "checkout" or "/checkout", execute complete session termination p
 
 Execute ALL steps when user says "checkout" - no exceptions.
 
+**7. CHECKOUT COMPLETION:**
+- Always end checkout process by saying: "checkout completed."
+
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.

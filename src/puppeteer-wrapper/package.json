@@ -1,0 +1,23 @@
+{
+  "name": "secure-puppeteer-wrapper",
+  "version": "1.0.0",
+  "description": "Secure Puppeteer wrapper with authentication and restriction guardrails",
+  "main": "SecurePuppeteerWrapper.js",
+  "scripts": {
+    "test": "node test-wrapper.js",
+    "example": "node example-usage.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "puppeteer",
+    "security",
+    "automation",
+    "browser",
+    "guardrails"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -400,6 +400,59 @@ Execute ALL steps when user says "checkout" - no exceptions.
 **7. CHECKOUT COMPLETION:**
 - Always end checkout process by saying: "checkout completed."
 
+## 🚀 PROJECT STARTUP COMMAND
+
+When user says "startup [project-name]" or just "startup", execute complete project initialization protocol:
+
+### STARTUP PROTOCOL (MANDATORY):
+
+**1. PROJECT IDENTIFICATION & SETUP:**
+- Identify current project from directory or user specification
+- Load project-specific context and configuration
+- Restore previous session state and priorities
+- Check project health and dependencies
+
+**2. OVERALL TASK MANAGER COORDINATION:**
+- Connect with Pachacuti (CTO) for company-wide context
+- Get current project priorities and resource allocation
+- Check for cross-project dependencies and conflicts
+- Update company-wide project status
+
+**3. PROJECT-SPECIFIC AGENT ACTIVATION:**
+- Spawn or connect to dedicated project manager agent
+- Load project-specific goals, constraints, and context
+- Initialize project workflows and automation
+- Set up project-specific monitoring and tracking
+
+**4. ENVIRONMENT PREPARATION:**
+- git pull latest changes
+- Check for dependency updates or issues
+- Verify development environment setup
+- Initialize any required services or tools
+
+**5. CONTEXT RESTORATION:**
+- Load last session summary and stopping point
+- Review recent progress and completed work
+- Identify immediate priorities and blockers
+- Prepare work queue and next actions
+
+**6. COORDINATION SETUP:**
+- Establish communication between agents
+- Set up progress reporting and monitoring
+- Configure approval workflows and decision making
+- Initialize session documentation and tracking
+
+**7. READY STATE CONFIRMATION:**
+- Confirm all systems operational
+- Verify agent coordination working
+- Display current project status and priorities
+- Ready for productive development work
+
+Execute ALL steps when user says "startup" - coordinate all agents properly.
+
+**8. STARTUP COMPLETION:**
+- Always end startup process by saying: "Start up complete, ready to work."
+
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.

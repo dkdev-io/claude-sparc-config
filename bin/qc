@@ -1,0 +1,55 @@
+#!/bin/bash
+
+case "$1" in
+    "control"|"")
+        # Launch quality control in new window
+        if [ -f "./scripts/quality-control.sh" ]; then
+            ./scripts/quality-control.sh
+        elif [ -f "./scripts/qa-verifier.js" ]; then
+            # Fallback: open new Terminal window with QA verifier
+            osascript -e "
+            tell application \"Terminal\"
+                do script \"cd '$(pwd)' && clear && echo '🎯 QA VERIFICATION AGENT' && echo '═══════════════════════════════════════════' && echo '' && node '$(pwd)/scripts/qa-verifier.js'\"
+                activate
+            end tell"
+            echo "✅ QA Agent opened in new Terminal window"
+        else
+            echo "⚠️  QA scripts not found in current directory"
+            echo "Make sure you're in the pachacuti project directory"
+        fi
+        ;;
+    "confirm")
+        # Run confirmation directly in current terminal
+        shift  # Remove 'confirm' from arguments
+        
+        # Handle both piped input and command line arguments
+        if [ -f "$HOME/pachacuti/scripts/qa-verifier.js" ]; then
+            cd "$HOME/pachacuti"
+            if [ $# -gt 0 ]; then
+                # Arguments provided - send them to qa-verifier
+                echo "$*" | node scripts/qa-verifier.js confirm
+            else
+                # No arguments - pass stdin through
+                node scripts/qa-verifier.js confirm
+            fi
+        elif [ -f "./scripts/qa-verifier.js" ]; then
+            if [ $# -gt 0 ]; then
+                echo "$*" | node ./scripts/qa-verifier.js confirm
+            else
+                node ./scripts/qa-verifier.js confirm
+            fi
+        else
+            echo "⚠️  QA verifier not found. Make sure you're in the pachacuti directory"
+        fi
+        ;;
+    "help")
+        echo "Quality Control Commands:"
+        echo "  qc / qc control  - Run QA verifier"
+        echo "  qc confirm       - (Use inside QA) Verify agent summary"
+        echo "  qc help          - Show this help"
+        ;;
+    *)
+        echo "Unknown command: $1"
+        echo "Use 'qc help' for available commands"
+        ;;
+esac

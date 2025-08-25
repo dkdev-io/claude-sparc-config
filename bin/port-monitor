@@ -1,0 +1,19 @@
+#!/bin/bash
+# Port Status Monitor
+
+echo "=== Port Status Monitor ==="
+echo ""
+echo "Core Services:"
+~/bin/port-check 3000 | tail -1
+~/bin/port-check 3001 | tail -1
+~/bin/port-check 5000 | tail -1
+echo ""
+echo "Frontend Apps:"
+for port in 3002 3004 3005 3006 5174 8081 8082 8083; do
+    ~/bin/port-check $port | tail -1
+done
+echo ""
+echo "Backend APIs:"
+for port in 3101 3102 3103 3104; do
+    ~/bin/port-check $port | tail -1
+done

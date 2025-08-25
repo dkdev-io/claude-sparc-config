@@ -1,0 +1,38 @@
+#!/bin/bash
+# Port management utility for checking and managing ports
+
+if [ -z "$1" ]; then
+    echo "Usage: port-check [PORT_NUMBER | all | kill PORT_NUMBER]"
+    echo ""
+    echo "Commands:"
+    echo "  port-check all          - Show all listening ports"
+    echo "  port-check PORT_NUMBER  - Check specific port"
+    echo "  port-check kill PORT    - Kill process on port"
+    exit 1
+fi
+
+if [ "$1" = "all" ]; then
+    echo "=== All listening ports ==="
+    lsof -i -P | grep LISTEN | grep -E ':\d{4}' | sort -t: -k2 -n | column -t
+elif [ "$1" = "kill" ]; then
+    if [ -z "$2" ]; then
+        echo "Please specify port number to kill"
+        exit 1
+    fi
+    PID=$(lsof -t -i:$2)
+    if [ -n "$PID" ]; then
+        echo "Killing process on port $2 (PID: $PID)"
+        kill -9 $PID
+        echo "Process killed successfully"
+    else
+        echo "No process found on port $2"
+    fi
+else
+    echo "=== Checking port $1 ==="
+    lsof -i :$1
+    if [ $? -ne 0 ]; then
+        echo "✅ Port $1 is available"
+    else
+        echo "❌ Port $1 is in use"
+    fi
+fi

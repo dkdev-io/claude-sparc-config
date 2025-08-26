@@ -453,9 +453,227 @@ Execute ALL steps when user says "startup" - coordinate all agents properly.
 **8. STARTUP COMPLETION:**
 - Always end startup process by saying: "Start up complete, ready to work."
 
+## 🚫 INTEGRATION SPRAWL PREVENTION GUARDRAILS
+
+### 🎯 GOLDEN RULE: "One Service, One Implementation, One Location"
+
+**CRITICAL FOR AI AGENTS**: These rules prevent "integration sprawl" - the most common failure pattern in AI-assisted development where multiple sessions create competing implementations.
+
+### 1. BEFORE ANY INTEGRATION WORK
+
+**MANDATORY SEARCH PROTOCOL**:
+```bash
+# ALWAYS run these BEFORE creating ANY integration:
+grep -r "ServiceName" . --include="*.js" --include="*.ts" --include="*.py"
+find . -name "*servicename*" -type f 2>/dev/null
+ls -la ~/.claude*/  # Check for existing implementations
+```
+
+**If ANY matches found → MUST choose:**
+- **REUSE**: Continue with existing implementation
+- **REPLACE**: Archive old, create new (NEVER both)
+- **ABORT**: If unsure, ask user first
+
+### 2. SINGLE SOURCE OF TRUTH
+
+**ONE Location Per Service**:
+```
+✅ CORRECT:
+~/.claude-flow/integrations/
+  ├── slack/          # ALL Slack code here
+  ├── github/         # ALL GitHub code here  
+  └── supabase/       # ALL Supabase code here
+
+❌ WRONG (Integration Sprawl):
+./project1/slack-integration.js
+./project2/lib/slack.js
+./utils/slack-helper.js
+~/.claude/hooks/slack.js
+```
+
+### 3. IMPLEMENTATION DECISION LOG
+
+**REQUIRED**: Before starting ANY integration, create/update log:
+```bash
+echo "## $(date): Starting [Service] Integration" >> ~/integration-decisions.log
+echo "Pattern: [webhook/api/socket]" >> ~/integration-decisions.log  
+echo "Location: [exact path]" >> ~/integration-decisions.log
+echo "Replacing: [old paths if any]" >> ~/integration-decisions.log
+```
+
+### 4. FAILED ATTEMPT PROTOCOL
+
+**IMMEDIATE CLEANUP REQUIRED**:
+```bash
+# If implementation fails or is abandoned:
+mkdir -p ~/archived-integrations/$(date +%Y%m%d)
+mv failed-integration ~/archived-integrations/$(date +%Y%m%d)/
+echo "ARCHIVED: Reason for failure" >> ~/archived-integrations/$(date +%Y%m%d)/README.md
+```
+
+**NEVER leave partial implementations in codebase!**
+
+### 5. DEPENDENCY VERIFICATION
+
+**NO PHANTOM DEPENDENCIES**:
+```javascript
+// ❌ FORBIDDEN - Never reference without checking:
+const module = require('./some-module');
+
+// ✅ REQUIRED - Always verify first:
+const fs = require('fs');
+if (!fs.existsSync('./some-module.js')) {
+  console.error('Creating some-module.js as it does not exist');
+  // CREATE the file or throw error - never leave hanging
+}
+const module = require('./some-module');
+```
+
+### 6. CONFIGURATION HIERARCHY
+
+**ONE Config Per Service**:
+```bash
+# ✅ CORRECT:
+~/.claude-flow/integrations/slack/.env       # Single source
+~/.claude-flow/integrations/slack/config.js  # References .env
+
+# ❌ WRONG:
+./.env                    # Multiple .env files
+./config/.env             # Scattered configuration
+~/.claude/.env            # Competing configs
+```
+
+### 7. SESSION HANDOFF REQUIREMENTS
+
+**BEFORE ENDING ANY SESSION**:
+```bash
+# Create handoff file:
+cat > ~/current-integration-state.md << EOF
+## Active Integrations
+- Slack: [working/broken/none] at [path]
+- GitHub: [working/broken/none] at [path]  
+- Pattern Used: [webhook/api/socket]
+- Next Session MUST: [specific instruction]
+- DO NOT CREATE NEW: [service] already exists at [path]
+EOF
+```
+
+### 8. ANTI-DUPLICATION CHECKS
+
+**RUN BEFORE EVERY SESSION**:
+```bash
+#!/bin/bash
+# integration-health-check.sh
+
+# Check for sprawl
+for service in slack github supabase twitter; do
+  count=$(find . -name "*${service}*" -type f | wc -l)
+  if [ $count -gt 3 ]; then
+    echo "⚠️ WARNING: ${count} ${service} files - CONSOLIDATION REQUIRED"
+    echo "DO NOT create new ${service} integration!"
+  fi
+done
+
+# Check for exposed credentials
+if grep -r "xox[bp]-\|sk_live\|api_key" . 2>/dev/null; then
+  echo "🚨 CRITICAL: Exposed credentials detected - ROTATE IMMEDIATELY"
+fi
+```
+
+### 9. INTEGRATION TESTING GATE
+
+**NO Integration Without Test**:
+```bash
+# For EVERY integration file:
+integration.js       # Implementation
+integration.test.js  # MUST exist and pass
+integration.md       # MUST document setup
+.env.example        # MUST show required vars
+```
+
+### 10. APPROVAL REQUIRED PATTERNS
+
+**ALWAYS Ask User Before**:
+- Creating new integration in different location
+- Using different integration pattern than existing
+- Adding new service dependencies
+- Modifying existing working integration
+
+### 11. CONTEXT AWARENESS FOR AI AGENTS
+
+**START OF EVERY SESSION, AI Agents MUST**:
+1. Check `~/current-integration-state.md`
+2. Run `integration-health-check.sh`
+3. Read `~/integration-decisions.log`
+4. NEVER assume clean slate
+5. ALWAYS assume previous work exists
+
+### 12. RECOVERY FROM SPRAWL
+
+**If Sprawl Detected**:
+```bash
+# 1. Stop and assess
+find . -name "*service*" > sprawl-audit.txt
+
+# 2. Identify newest working version
+grep -l "working" */README.md
+
+# 3. Consolidate to single location
+mkdir -p ~/.claude-flow/integrations/service
+cp newest-working/* ~/.claude-flow/integrations/service/
+
+# 4. Archive everything else
+mkdir ~/archived-integrations/sprawl-cleanup-$(date +%Y%m%d)
+mv old-attempts/* ~/archived-integrations/sprawl-cleanup-$(date +%Y%m%d)/
+
+# 5. Document
+echo "Consolidated service integration from X locations to 1" >> ~/integration-decisions.log
+```
+
+### 13. COMMIT MESSAGE REQUIREMENTS
+
+**For Integration Work**:
+```bash
+# ✅ CORRECT commit messages:
+"feat(slack): Implement single Socket Mode integration at ~/.claude-flow/integrations/slack"
+"refactor(slack): Consolidate 7 implementations into single location"
+"fix(slack): Replace webhook with Socket Mode at standard location"
+
+# ❌ WRONG:
+"Add Slack integration"  # Where? What pattern? Replacing what?
+"Fix Slack"             # Which of the 7 implementations?
+```
+
+### 14. PREVENTING FUTURE SPRAWL
+
+**Pre-commit Hook** (add to `.git/hooks/pre-commit`):
+```bash
+#!/bin/bash
+# Prevent integration sprawl
+
+for service in slack github supabase; do
+  new_files=$(git diff --cached --name-only | grep -i "$service" | grep -v "claude-flow/integrations/$service")
+  if [ ! -z "$new_files" ]; then
+    echo "❌ BLOCKED: New $service files outside standard location:"
+    echo "$new_files"
+    echo "Use: ~/.claude-flow/integrations/$service/ instead"
+    exit 1
+  fi
+done
+```
+
+### 15. SPECIAL RULES FOR SLACK
+
+Given previous sprawl issues:
+- **ONLY location**: `~/.claude-flow/integrations/slack/`
+- **ONLY pattern**: Socket Mode (most reliable for local)
+- **ONLY config**: Single `.env` file in that directory
+- **REQUIRED test**: Must successfully post "Hello World" before any complex features
+
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
 Never save working files, text/mds and tests to the root folder.
+ALWAYS check for existing implementations before creating new integrations.

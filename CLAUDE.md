@@ -373,31 +373,54 @@ When user says "checkout" or "/checkout", execute complete session termination p
 - Flag any issues for immediate attention
 - Note work needing continuation in next session
 
-**3. SECOND BRAIN DOCUMENTATION:**
+**3. APP ACCESS DASHBOARD UPDATE (MANDATORY):**
+- **CRITICAL**: Update app access dashboard with current session's work
+- Scan for new/modified applications and their ports
+- Update dashboard with accessible URLs and file locations
+- Ensure user can easily access all created/modified apps
+
+**DASHBOARD UPDATE PROTOCOL:**
+```bash
+# STEP 1: Scan and update app information
+~/bin/update-app-dashboard
+
+# STEP 2: Verify dashboard accessibility
+ls -la ~/docs/app-access-dashboard.html
+
+# STEP 3: Record app access info in session notes
+echo "## App Access Information" >> session-notes.md
+echo "Dashboard: file://$HOME/docs/app-access-dashboard.html" >> session-notes.md
+~/bin/scan-apps summary >> session-notes.md
+```
+
+**4. SECOND BRAIN DOCUMENTATION:**
 - Create comprehensive session summary
 - Document work accomplished, decisions made, problems solved
 - Save to session logs with searchable metadata
 - Link to git commits and file changes
+- **MUST INCLUDE**: Direct links to all modified/created app access points
 
-**4. PACHACUTI COORDINATION:**
+**5. PACHACUTI COORDINATION:**
 - Generate CTO summary (resource usage, progress, optimization opportunities)
 - Flag strategic decisions needing review
 - Update project coordination data
 
-**5. NEXT SESSION PREP:**
+**6. NEXT SESSION PREP:**
 - Document stopping point and context
 - Prepare restoration information
 - Note immediate next steps
 
-**6. FINAL VERIFICATION:**
+**7. FINAL VERIFICATION:**
 - Confirm GitHub updated ✅
 - Confirm session documented ✅  
 - Confirm Pachacuti has data ✅
+- **Confirm app dashboard updated** ✅
+- **Confirm app access documented** ✅
 - Ready for clean termination ✅
 
 Execute ALL steps when user says "checkout" - no exceptions.
 
-**7. CHECKOUT COMPLETION:**
+**8. CHECKOUT COMPLETION:**
 - Always end checkout process by saying: "checkout completed."
 
 ## 🚀 PROJECT STARTUP COMMAND
@@ -452,6 +475,348 @@ Execute ALL steps when user says "startup" - coordinate all agents properly.
 
 **8. STARTUP COMPLETION:**
 - Always end startup process by saying: "Start up complete, ready to work."
+
+## 🚫 PORT CONFLICT PREVENTION GUARDRAILS
+
+### 🔴 ABSOLUTE REQUIREMENT: "CHECK BEFORE BIND"
+
+**CRITICAL FOR ALL AGENTS**: Every agent MUST check port availability before starting ANY service. Port conflicts are the #1 cause of development failures.
+
+### MANDATORY PORT CHECK PROTOCOL
+
+**BEFORE ANY SERVICE START, AGENTS MUST:**
+
+```bash
+# STEP 1: CHECK PORT AVAILABILITY (NON-NEGOTIABLE)
+port_to_use=3000  # Example port
+
+# Check if port is in use
+if lsof -i :$port_to_use > /dev/null 2>&1; then
+    echo "❌ BLOCKED: Port $port_to_use is already in use!"
+    echo "Running process:"
+    lsof -i :$port_to_use
+    
+    # MUST find alternative port
+    for alt_port in $(seq $((port_to_use + 100)) $((port_to_use + 200))); do
+        if ! lsof -i :$alt_port > /dev/null 2>&1; then
+            echo "✅ Using alternative port: $alt_port"
+            port_to_use=$alt_port
+            break
+        fi
+    done
+else
+    echo "✅ Port $port_to_use is available"
+fi
+
+# STEP 2: CHECK PORT REGISTRY
+cat ~/docs/port-registry.md | grep -E "^.*Port $port_to_use.*$"
+if [ $? -eq 0 ]; then
+    echo "⚠️ WARNING: Port $port_to_use is registered to another service"
+    echo "Verify this is the correct application before proceeding"
+fi
+
+# STEP 3: USE port-check TOOL
+~/bin/port-check $port_to_use
+```
+
+### PORT ALLOCATION RULES
+
+**RESERVED PORT RANGES:**
+```
+3000-3099: Frontend applications (React, Next.js, Vue)
+3100-3199: Backend APIs  
+3200-3299: Microservices
+5000-5099: Alternative backends
+5170-5199: Vite development servers
+8000-8099: Python/Django servers
+8500-8599: Blockchain/Web3 services
+```
+
+**PORT ASSIGNMENT PROTOCOL:**
+1. Check `~/docs/port-registry.md` for assigned port
+2. If no assignment exists, use next available in range
+3. Update port-registry.md IMMEDIATELY after assignment
+4. Commit port assignment to git
+
+### ENFORCEMENT & CONSEQUENCES
+
+**VIOLATIONS TRIGGER:**
+- ❌ Immediate task termination
+- ❌ Error report to user
+- ❌ Requirement to fix before proceeding
+- ❌ Documentation in violation log
+
+**PORT CONFLICT DETECTION:**
+```bash
+# Agents MUST run this check before EVERY service start
+#!/bin/bash
+check_port_conflicts() {
+    local port=$1
+    local service=$2
+    
+    # Check if port is in use
+    if lsof -i :$port > /dev/null 2>&1; then
+        echo "🚨 CRITICAL: Port conflict detected!"
+        echo "Port $port is already in use by:"
+        lsof -i :$port
+        
+        # Log violation
+        echo "$(date): $service attempted to use occupied port $port" >> ~/port-violations.log
+        
+        # MUST STOP - DO NOT PROCEED
+        exit 1
+    fi
+    
+    # Check port registry
+    assigned=$(grep "^| .* | $port |" ~/docs/port-registry.md | head -1)
+    if [ ! -z "$assigned" ] && ! echo "$assigned" | grep -q "$service"; then
+        echo "⚠️ WARNING: Port $port is assigned to different service"
+        echo "$assigned"
+        echo "Confirm this is intentional before proceeding"
+    fi
+}
+```
+
+### PRE-COMMIT PORT VALIDATION
+
+**Add to `.git/hooks/pre-commit`:**
+```bash
+#!/bin/bash
+# Prevent committing services with port conflicts
+
+# Check all .env files for PORT assignments
+for env_file in $(find . -name ".env*" -type f 2>/dev/null); do
+    port=$(grep "^PORT=" "$env_file" | cut -d= -f2)
+    if [ ! -z "$port" ]; then
+        # Verify port is documented
+        if ! grep -q "| .* | $port |" ~/docs/port-registry.md; then
+            echo "❌ BLOCKED: Port $port in $env_file not documented in port-registry.md"
+            exit 1
+        fi
+    fi
+done
+```
+
+### PORT REGISTRY UPDATE REQUIREMENTS
+
+**EVERY port assignment MUST update `~/docs/port-registry.md`:**
+```markdown
+| Application | Port | Status | Technology | Path |
+|------------|------|--------|------------|------|
+| YourApp | 3XXX | CONFIGURED/RUNNING | Tech | /path |
+```
+
+**Status values:**
+- `CONFIGURED`: Port assigned but service not running
+- `RUNNING`: Service actively using port
+- `DEPRECATED`: Old assignment, being migrated
+
+### AGENT STARTUP CHECKLIST
+
+**BEFORE starting ANY service, EVERY agent MUST:**
+- [ ] Run `~/bin/port-check all` to see current usage
+- [ ] Check assigned port in `~/docs/port-registry.md`
+- [ ] Verify port availability with `lsof -i :PORT`
+- [ ] If conflict, find alternative port in correct range
+- [ ] Update .env with correct port
+- [ ] Update port-registry.md
+- [ ] Test service starts successfully
+- [ ] Commit port configuration changes
+
+### PORT CONFLICT RECOVERY
+
+**If port conflict occurs:**
+```bash
+# 1. Identify conflicting process
+lsof -i :PORT
+
+# 2. Determine if it should be killed
+ps aux | grep PID
+
+# 3. If safe to kill:
+~/bin/port-check kill PORT
+
+# 4. If not safe, find alternative:
+for port in $(seq START END); do
+    if ! lsof -i :$port > /dev/null 2>&1; then
+        echo "Available: $port"
+        break
+    fi
+done
+
+# 5. Update all references to new port
+grep -r "PORT.*OLD_PORT" . --include="*.env*"
+grep -r "localhost:OLD_PORT" . --include="*.js" --include="*.ts"
+
+# 6. Update port-registry.md
+```
+
+### MONITORING & ALERTS
+
+**Real-time port monitoring:**
+```bash
+# Run periodically to detect conflicts
+~/bin/port-monitor
+
+# Alert on conflicts
+watch -n 5 '~/bin/port-check all | grep -E "3[0-9]{3}|5[0-9]{3}|8[0-9]{3}"'
+```
+
+### COMMON VIOLATIONS TO AVOID
+
+**❌ NEVER DO THIS:**
+```javascript
+// BAD: No port checking
+app.listen(3000, () => console.log('Server started'));
+
+// BAD: Hardcoded port without check
+const PORT = 3001;
+server.listen(PORT);
+```
+
+**✅ ALWAYS DO THIS:**
+```javascript
+// GOOD: Check and fallback
+const checkPort = require('detect-port');
+const PORT = await checkPort(process.env.PORT || 3000);
+app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+
+// GOOD: Environment-based with validation
+const PORT = process.env.PORT || 3000;
+// But FIRST run shell script to verify port is available!
+```
+
+---
+
+## 📊 APP ACCESS TRACKING GUARDRAILS
+
+### 🎯 MANDATORY REQUIREMENT: "TRACK WHERE USERS CAN ACCESS APPS"
+
+**CRITICAL FOR ALL AGENTS**: Every time you create, modify, or deploy an application, you MUST update the app access dashboard so users know where to find and access their apps.
+
+### MANDATORY APP ACCESS PROTOCOL
+
+**AFTER CREATING/MODIFYING ANY APPLICATION:**
+
+```bash
+# STEP 1: UPDATE DASHBOARD (NON-NEGOTIABLE)
+~/bin/update-app-dashboard
+
+# STEP 2: VERIFY DASHBOARD UPDATE
+ls -la ~/docs/app-access-dashboard.html
+echo "✅ Dashboard updated: $(date)"
+
+# STEP 3: DOCUMENT ACCESS INFORMATION
+echo "## New/Updated App Access" >> current-session-notes.md
+echo "- App: [APP_NAME]" >> current-session-notes.md
+echo "- Location: [FULL_PATH]" >> current-session-notes.md
+echo "- Port: [PORT_NUMBER]" >> current-session-notes.md
+echo "- URL: http://localhost:[PORT]" >> current-session-notes.md
+echo "- Status: [RUNNING/CONFIGURED]" >> current-session-notes.md
+```
+
+### APP INFORMATION REQUIREMENTS
+
+**EVERY APP ENTRY MUST INCLUDE:**
+- **Name**: Clear, descriptive application name
+- **Location**: Full file system path where app is stored
+- **Port**: Port number if web application (or "N/A")
+- **Access URL**: Direct clickable link if applicable
+- **Status**: RUNNING, CONFIGURED, or STOPPED
+- **Technology**: Framework/language (React, Next.js, Python, etc.)
+- **Description**: Brief explanation of what the app does
+
+### CHECKOUT INTEGRATION
+
+**DURING EVERY CHECKOUT, AGENTS MUST:**
+1. Run `~/bin/update-app-dashboard` (automatically scans and updates)
+2. Verify dashboard file exists and is current
+3. Include app access summary in session documentation
+4. Provide direct dashboard link to user
+
+### USER ACCESS REQUIREMENTS
+
+**MAKE IT EASY FOR USERS:**
+- Dashboard must be accessible via file:// URL
+- All running apps must show clickable localhost links
+- File locations must be accurate and up-to-date
+- Status must reflect actual app state (running vs configured)
+
+### AGENT RESPONSIBILITIES
+
+**BEFORE ENDING ANY SESSION WHERE APPS WERE MODIFIED:**
+```bash
+# 1. Scan current directory for new/modified apps
+find . -name "package.json" -o -name "*.py" -o -name "*.html" | head -10
+
+# 2. Update app tracking
+~/bin/update-app-dashboard
+
+# 3. Provide user with access information
+echo "🚀 App Access Dashboard: file://$HOME/docs/app-access-dashboard.html"
+echo "📱 Apps updated this session:"
+~/bin/scan-apps summary | grep -E "(Created|Modified|Running)" || echo "No apps detected"
+```
+
+### ENFORCEMENT
+
+**VIOLATIONS RESULT IN:**
+- ❌ Incomplete checkout process
+- ❌ User cannot find their applications
+- ❌ Wasted development effort
+- ❌ Poor user experience
+
+**MANDATORY CHECKS:**
+- Dashboard file exists and is recent
+- All session apps are documented
+- URLs are functional for running apps
+- File paths are accurate
+
+### COMMON APP SCENARIOS
+
+**New React/Next.js App:**
+```bash
+# After creating app
+cd new-app-directory
+npm start &  # Start if possible
+PORT=$(grep -r "PORT\|port" . | grep -oE '[0-9]{4}' | head -1)
+echo "New React app on port ${PORT:-3000}"
+~/bin/update-app-dashboard
+```
+
+**Python Web App:**
+```bash
+# After creating Flask/Django app
+python app.py &  # Start if possible
+PORT=$(grep -oE "port.*[0-9]{4}" *.py | head -1 | grep -oE '[0-9]{4}')
+echo "New Python app on port ${PORT:-5000}"
+~/bin/update-app-dashboard
+```
+
+**Static Website:**
+```bash
+# After creating HTML/CSS site
+python -m http.server 8000 &  # Quick local server
+echo "Static site on port 8000"
+~/bin/update-app-dashboard
+```
+
+### DASHBOARD ACCESS LOCATIONS
+
+**PRIMARY DASHBOARD:**
+- File: `~/docs/app-access-dashboard.html`
+- URL: `file:///Users/Danallovertheplace/docs/app-access-dashboard.html`
+
+**DATA FILES:**
+- Apps Data: `~/docs/apps-data.json`
+- Port Registry: `~/docs/port-registry.md`
+
+**TOOLS:**
+- Scanner: `~/bin/scan-apps`
+- Updater: `~/bin/update-app-dashboard`
+- Port Check: `~/bin/port-check`
+
+---
 
 ## 🚫 INTEGRATION SPRAWL PREVENTION GUARDRAILS
 

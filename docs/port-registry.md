@@ -33,6 +33,16 @@
    - ControlCenter (running)
    - ScheduleMe/backend/.env (PORT=5000)
 
+### NEWLY ASSIGNED PORTS (Post-Conflict Resolution)
+- **Port 3010**: contact-nexus-unify-flow (Vite) - reassigned from 8080
+- **Port 3011**: note-clarify-organizer (Vite) - reassigned from 8080
+- **Port 3012**: live-stream-buddy (Vite) - reassigned from 8080
+- **Port 3013**: rsvp-unifier (Vite) - reassigned from 8080
+- **Port 3014**: voter-analytics-hub (Vite) - reassigned from 8080
+- **Port 3015**: social-survey-secure-haven (Vite) - reassigned from 8080
+- **Port 3016**: blue-token-campaigns (Vite) - reassigned from 8080
+- **Port 3017**: quick-capture-notes (Vite) - reassigned from 8080
+
 ### CONFIGURED BUT NOT RUNNING
 - **Port 3003**: SmartShopper backend (configured in backend/.env)
 - **Port 5175**: MorningBrief frontend (configured)
@@ -44,12 +54,26 @@
 ### Frontend Applications
 | Application | Port | Status | Technology | Path |
 |------------|------|--------|------------|------|
-| CaptureAI | 3000 | RUNNING | Next.js | /CaptureAI |
+| ScheduleMe Frontend | 3000 | CONFIGURED | React | /ScheduleMe/frontend |
 | SmartShopper Frontend | 3002 | RUNNING | Vite | /SmartShopper/frontend |
+| CaptureAI | 3006 | CONFIGURED | Next.js | /CaptureAI |
+| agentic-testing-tool | 3007 | CONFIGURED | React | /Desktop/agentic-testing-tool |
+| location-buddy | 3008 | CONFIGURED | React | /unfinished-apps-workspace/utility-apps/location-buddy |
+| multiplayer-word-search | 3009 | CONFIGURED | React | /multiplayer-word-search/frontend |
+| contact-nexus-unify-flow | 3010 | CONFIGURED | React | /contact-nexus-unify-flow |
+| note-clarify-organizer | 3011 | CONFIGURED | React | /note-clarify-organizer |
+| live-stream-buddy | 3012 | CONFIGURED | React | /live-stream-buddy |
+| rsvp-unifier | 3013 | CONFIGURED | React | /unfinished-apps-workspace/utility-apps/rsvp-unifier |
+| voter-analytics-hub | 3014 | CONFIGURED | React | /voter-analytics-hub |
+| social-survey-secure-haven | 3015 | CONFIGURED | React | /unfinished-apps-workspace/utility-apps/social-survey-secure-haven |
+| blue-token-campaigns | 3016 | CONFIGURED | React | /blue-token-campaigns |
+| quick-capture-notes | 3017 | CONFIGURED | Vite | /quick-capture-notes |
 | crypto-campaign-unified | 5174 | RUNNING | Vite | /crypto-campaign-unified/frontend |
-| quick-capture-notes | 8081 | RUNNING | Vite | /quick-capture-notes |
-| voter-analytics-hub | 8082, 8083 | RUNNING | Vite | /voter-analytics-hub |
 | MorningBrief Frontend | 5175 | CONFIGURED | Vite | /MorningBrief/frontend |
+| note-clarify-organizer (workspace) | 8081 | RUNNING | Vite | /unfinished-apps-workspace/note-clarify-organizer |
+| voter-analytics-hub (workspace) | 8082 | CONFIGURED | Vite | /unfinished-apps-workspace/voter-tools/voter-analytics-hub |
+| social-survey-secure-haven | 8083 | RUNNING | React | /social-survey-secure-haven |
+| minimalist-web-design | 8084 | RUNNING | React | /minimalist-web-design |
 
 ### Backend Applications
 | Application | Port | Status | Technology | Path |
@@ -140,13 +164,16 @@ fi
 ```
 
 ## Last Updated
-- Date: 2025-08-25
-- Time: 12:05 PM
-- Total Active Ports: 12
-- Port Conflicts: 3
+- Date: 2025-08-26
+- Time: 13:25 PM
+- Total Active Ports: 16
+- Port Conflicts: 0 (RESOLVED)
 
 ## Notes
-- Multiple voter-analytics-hub instances running (ports 8082, 8083)
-- ControlCenter using both ports 5000 and 7000
+- ✅ All port conflicts resolved as of 2025-08-26
+- Port 8080 conflicts resolved: 11 apps moved to 3010-3017 range
+- ControlCenter using both ports 5000 and 7000 (intended)
 - Several MCP servers running for claude-flow and ruv-swarm
 - Hardhat blockchain node active on port 8545
+- Python HTTP server on 8080 (kept - no conflicts)
+- Duplicate process on port 3005 eliminated

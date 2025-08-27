@@ -177,3 +177,5 @@ fi
 - Hardhat blockchain node active on port 8545
 - Python HTTP server on 8080 (kept - no conflicts)
 - Duplicate process on port 3005 eliminated
+| GerryManderMapper | 3100 | CONFIGURED | Next.js | /Users/Danallovertheplace/GerryManderMapper |
+| GerryManderMapper | 3100 | RUNNING | Next.js | /Users/Danallovertheplace/GerryManderMapper |

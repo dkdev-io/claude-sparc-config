@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>SecureSend - Encrypted Document Sharing</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">SECURE SEND</h1>
+            <p class="app-subtitle">End-to-End Encrypted Document Sharing</p>
+            <div id="userInfo" class="user-info"></div>
+        </header>
+
+        <!-- Authentication Section -->
+        <section id="authSection" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button id="loginTab" class="auth-tab active">Login</button>
+                    <button id="registerTab" class="auth-tab">Sign Up</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form">
+                    <h2>Welcome Back</h2>
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="rememberMe">
+                            Remember me for 30 days
+                        </label>
+                    </div>
+                    <button type="submit" class="primary-button">Login to SecureSend</button>
+                    <div class="auth-links">
+                        <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+                    </div>
+                </form>
+
+                <!-- Registration Form -->
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <h2>Create Account</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email Address</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="organization">Organization (Optional)</label>
+                        <input type="text" id="organization">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" required>
+                        <small>Minimum 8 characters with uppercase, lowercase, and number</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="termsAccepted" required>
+                            I accept the <a href="#terms" target="_blank">Terms of Service</a>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="privacyAccepted" required>
+                            I accept the <a href="#privacy" target="_blank">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="primary-button">Create SecureSend Account</button>
+                </form>
+
+                <!-- Password Reset Form -->
+                <form id="resetForm" class="auth-form" style="display: none;">
+                    <h2>Reset Password</h2>
+                    <p>Enter your email address and we'll send you a link to reset your password.</p>
+                    <div class="form-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" required>
+                    </div>
+                    <button type="submit" class="primary-button">Send Reset Link</button>
+                    <div class="auth-links">
+                        <a href="#" id="backToLoginLink">Back to Login</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <main id="mainContent" class="main-content" style="display: none;">
+            <!-- Mode Selection -->
+            <div class="mode-selection">
+                <button id="sendMode" class="mode-button active">Send Document</button>
+                <button id="receiveMode" class="mode-button">Receive Document</button>
+            </div>
+
+            <!-- Send Section -->
+            <section id="sendSection" class="content-section">
+                <h2 class="section-title">Send Secure Documents</h2>
+                
+                <form id="sendDocumentForm">
+                    <!-- File Upload Area -->
+                    <div class="upload-card">
+                        <div id="uploadArea" class="upload-area">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-text">Click or drag to select documents</div>
+                            <div class="upload-hint">Supported: PDF, Word, PowerPoint, Excel, Images, Text</div>
+                            <div class="upload-limit">Maximum 50MB per file</div>
+                        </div>
+                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" style="display: none;">
+                        <button type="button" id="selectButton" class="primary-button">Choose Files</button>
+                    </div>
+
+                    <!-- Selected Files Display -->
+                    <div id="selectedFilesContainer" class="selected-files-container" style="display: none;"></div>
+
+                    <!-- Recipient Section -->
+                    <div id="recipientSection" class="recipient-section" style="display: none;">
+                        <h3>📧 Recipient Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recipientEmail">Recipient Email *</label>
+                                <input type="email" id="recipientEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="recipientName">Recipient Name *</label>
+                                <input type="text" id="recipientName" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="documentSubject">Subject *</label>
+                            <input type="text" id="documentSubject" placeholder="Document subject line" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="documentMessage">Message (Optional)</label>
+                            <textarea id="documentMessage" rows="3" placeholder="Add a personal message for the recipient"></textarea>
+                        </div>
+
+                        <h3>🔒 Security & Access Options</h3>
+                        
+                        <div class="security-options">
+                            <div class="option-group">
+                                <label class="option-label">
+                                    <input type="checkbox" id="requireLogin" checked>
+                                    <span class="option-title">Require recipient to create account</span>
+                                    <small class="option-description">Recipient must sign up or log in to access documents</small>
+                                </label>
+                            </div>
+
+                            <div class="option-group">
+                                <label class="option-label">
+                                    <input type="checkbox" id="cameraRequired">
+                                    <span class="option-title">📹 Require camera recording</span>
+                                    <small class="option-description">Record recipient while viewing for security monitoring</small>
+                                </label>
+                            </div>
+
+                            <div class="option-group">
+                                <label class="option-label">
+                                    <input type="checkbox" id="printingAllowed" checked>
+                                    <span class="option-title">🖨️ Allow printing</span>
+                                    <small class="option-description">Recipient can print the documents</small>
+                                </label>
+                            </div>
+
+                            <div class="option-group">
+                                <label class="option-label">
+                                    <input type="checkbox" id="downloadAllowed">
+                                    <span class="option-title">💾 Allow download</span>
+                                    <small class="option-description">Recipient can download decrypted files</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiryHours">⏱️ Expires In</label>
+                                <select id="expiryHours">
+                                    <option value="1">1 hour</option>
+                                    <option value="6">6 hours</option>
+                                    <option value="24" selected>24 hours</option>
+                                    <option value="72">3 days</option>
+                                    <option value="168">1 week</option>
+                                    <option value="720">30 days</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="maxViews">👁️ Maximum Views</label>
+                                <select id="maxViews">
+                                    <option value="1">1 view</option>
+                                    <option value="3">3 views</option>
+                                    <option value="5">5 views</option>
+                                    <option value="10" selected>10 views</option>
+                                    <option value="25">25 views</option>
+                                    <option value="100">100 views</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="primary-button send-button">
+                            🚀 Send Secure Document Package
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Send Confirmation -->
+                <div id="sendConfirmation" class="send-confirmation" style="display: none;">
+                    <!-- Dynamic confirmation content will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Receive Section -->
+            <section id="receiveSection" class="content-section" style="display: none;">
+                <h2 class="section-title">Access Secure Document</h2>
+                
+                <div class="access-form">
+                    <div class="form-group">
+                        <label for="accessCodeInput">Enter Access Code:</label>
+                        <input type="text" id="accessCodeInput" maxlength="12" placeholder="Enter access code">
+                    </div>
+                    <button id="accessButton" class="primary-button">Access Document</button>
+                </div>
+            </section>
+
+            <!-- Camera Consent -->
+            <div id="cameraConsent" class="camera-consent" style="display: none;">
+                <h2>🎥 Camera Recording Required</h2>
+                <p><strong>This document requires video recording for security monitoring.</strong></p>
+                <div class="consent-details">
+                    <p>📹 Your camera and microphone will record during document viewing</p>
+                    <p>🔒 Recording is encrypted and stored securely</p>
+                    <p>⏱️ Recording automatically stops when you close the document</p>
+                    <p>🚨 Any security violations will be logged and reported</p>
+                    <p>🗑️ Recordings are automatically deleted after review period</p>
+                </div>
+                <div class="consent-warning">
+                    <p><strong>⚠️ By continuing, you consent to being recorded while viewing this secure document.</strong></p>
+                </div>
+                <div class="consent-buttons">
+                    <button id="consentButton" class="primary-button">I Consent - Start Recording</button>
+                    <button id="declineButton" class="secondary-button">Decline & Exit</button>
+                </div>
+            </div>
+
+            <!-- Document Viewer -->
+            <section id="viewerSection" class="viewer-section" style="display: none;">
+                <div class="viewer-header">
+                    <h2>🔒 Secure Document Viewer</h2>
+                    <div class="viewer-controls">
+                        <div id="cameraIndicator" class="camera-indicator" style="display: none;">🔴 Recording Active</div>
+                        <div id="recordingStats" class="recording-stats" style="display: none;">
+                            <span id="recordingTime">00:00</span> | 
+                            <span id="recordingSize">0 MB</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="documentViewer" class="document-viewer">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+
+                <!-- Camera Preview -->
+                <div id="cameraPreview" class="camera-preview" style="display: none;">
+                    <video id="cameraVideo" autoplay muted width="150" height="100"></video>
+                    <p>Security Monitor</p>
+                </div>
+
+                <!-- Watermark Overlay -->
+                <div id="watermarkOverlay" class="watermark-overlay"></div>
+            </section>
+        </main>
+
+        <!-- Security Alert Modal -->
+        <div id="securityModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Security Alert</h3>
+                <p id="securityMessage">Security message will appear here</p>
+                <button id="securityOkButton" class="primary-button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/crypto.js"></script>
+    <script src="js/camera-recording.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/document-manager.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

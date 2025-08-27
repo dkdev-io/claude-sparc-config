@@ -1,5 +1,143 @@
 # Claude Code Configuration - SPARC Development Environment
 
+# 🚨 MANDATORY AGENT PROTOCOL - READ FIRST
+
+## 🔥 AGENT AUTONOMY RULES - DO THE WORK, DON'T ASK
+
+### CRITICAL: AGENTS MUST DO, NOT DELEGATE
+
+**AGENTS: You have FULL PERMISSION and RESPONSIBILITY to:**
+1. **CREATE** - Build schemas, write migrations, set up databases
+2. **EXECUTE** - Run commands, apply changes, deploy functions
+3. **MANAGE** - Handle configurations, secrets, environments
+4. **FIX** - Debug issues, resolve conflicts, handle errors
+5. **COMPLETE** - Finish tasks end-to-end without asking user to do parts
+
+### ❌ NEVER SAY (Examples of what NOT to do):
+- "You'll need to create a table..." → **WRONG! YOU create the table**
+- "Please run `supabase db push`..." → **WRONG! YOU run the command**
+- "Set up authentication by..." → **WRONG! YOU set up authentication**
+- "The user should configure..." → **WRONG! YOU configure it**
+- "Ask me for credentials..." → **OK, only for secrets you don't have**
+
+### ✅ ALWAYS DO (Examples of correct behavior):
+- "I'll create the schema now..." → **CORRECT! Take action**
+- "Running `supabase db push`..." → **CORRECT! Execute directly**
+- "Setting up authentication..." → **CORRECT! Do it yourself**
+- "Configuring the service..." → **CORRECT! Handle it**
+- "I need your API key..." → **CORRECT! Only ask for what you can't access**
+
+### SUPABASE-SPECIFIC AUTONOMY:
+- **Schemas**: Create tables, views, functions, triggers yourself
+- **Migrations**: Write, apply, rollback migrations yourself
+- **Auth**: Configure providers, policies, rules yourself
+- **Storage**: Set up buckets, policies yourself
+- **Functions**: Write, deploy, manage edge functions yourself
+- **Testing**: Create test data, run tests yourself
+
+## BEFORE ANY ACTION, EVERY AGENT MUST:
+
+1. **Identify Task Category**: [PORT_OPS/APP_ACCESS/INTEGRATION/SESSION/FILE_OPS/SERVICE_STARTS/CODE_GENERATION]
+2. **Review Relevant Guardrails**: Search CLAUDE.md for applicable sections  
+3. **Execute Required Protocols**: Run mandatory commands/checks
+4. **Acknowledge Compliance**: State which guardrails were followed
+5. **Proceed with Action**: Only after guardrail compliance
+
+### 🔒 MANDATORY CODE GENERATION SAFETY CHECKS
+
+**BEFORE GENERATING ANY CODE, AGENTS MUST:**
+
+1. **Check: Does this violate security rules?**
+   - No hardcoded secrets, API keys, or passwords
+   - No SQL injection vulnerabilities
+   - No XSS attack vectors
+   - Follow authentication/authorization patterns
+   - Validate all inputs
+
+2. **Check: Does this use only approved libraries?**
+   - Verify library exists in package.json
+   - Check if library is already used in codebase
+   - No unapproved dependencies without explicit permission
+   - Use existing utility functions when available
+
+3. **Check: Does this follow the project structure?**
+   - Files go in correct directories (/src, /tests, /docs, etc.)
+   - Follow existing naming conventions
+   - Use established patterns from codebase
+   - Import from correct paths (@/ aliases)
+   - Match existing code style and architecture
+
+**CODE GENERATION WITHOUT THESE CHECKS = IMMEDIATE TASK FAILURE**
+
+### Quick Guardrail Reference:
+- **Port Operations** → Section: PORT CONFLICT PREVENTION GUARDRAILS
+- **App Access** → Section: APP ACCESS TRACKING GUARDRAILS  
+- **Integrations** → Section: INTEGRATION SPRAWL PREVENTION GUARDRAILS
+- **Sessions** → Section: SESSION CHECKOUT/STARTUP COMMANDS
+- **File Operations** → Section: CRITICAL: CONCURRENT EXECUTION & FILE MANAGEMENT
+- **Service Starts** → Section: PORT CONFLICT PREVENTION GUARDRAILS
+- **Code Generation** → Section: MANDATORY CODE GENERATION SAFETY CHECKS
+
+**VIOLATION = IMMEDIATE TASK FAILURE**
+
+### MANDATORY GUARDRAIL CHECK PROTOCOL
+
+**BEFORE ANY ACTION, AGENTS MUST:**
+
+#### STEP 1: GUARDRAIL ACKNOWLEDGMENT (REQUIRED)
+```bash
+echo "✅ GUARDRAIL CHECK: $(date)"
+echo "Agent: [AGENT_NAME] reviewing guardrails for: [TASK_DESCRIPTION]"
+```
+
+#### STEP 2: RELEVANT GUARDRAIL IDENTIFICATION
+- Port conflicts → Run port-check protocol
+- File operations → Check integration sprawl prevention
+- Service starts → Check checkout/startup protocols
+- App access → Update app dashboard
+- Session work → Check session protocols
+
+#### STEP 3: EXPLICIT GUARDRAIL COMPLIANCE STATEMENT
+"I have reviewed and will comply with: [LIST_SPECIFIC_GUARDRAILS]"
+
+### 🎯 CONTEXT-BASED GUARDRAIL TRIGGERS
+
+#### Port/Service Operations
+**TRIGGER WORDS**: port, localhost, serve, start, dev, 3000-9000
+**MANDATORY**: Execute port conflict prevention protocol
+
+#### File/App Operations  
+**TRIGGER WORDS**: app, application, running, access, dashboard
+**MANDATORY**: Update app access tracking
+
+#### Code Generation Operations
+**TRIGGER WORDS**: code, function, component, class, interface, import, export
+**MANDATORY**: Execute code generation safety checks
+
+#### Session Management
+**TRIGGER WORDS**: checkout, startup, session, work
+**MANDATORY**: Execute session protocols
+
+#### Integration Work
+**TRIGGER WORDS**: service, integration, API, connect
+**MANDATORY**: Check integration sprawl prevention
+
+### 🚫 GUARDRAIL VIOLATION CONSEQUENCES
+
+#### IMMEDIATE ACTIONS FOR VIOLATIONS:
+1. **STOP** current task immediately
+2. **ACKNOWLEDGE** the violation explicitly  
+3. **EXPLAIN** which guardrail was missed
+4. **DEMONSTRATE** correct protocol execution
+5. **RESTART** task with proper guardrail compliance
+
+#### ESCALATING ENFORCEMENT:
+- 1st violation: Warning + correction
+- 2nd violation: Task termination + protocol review
+- 3rd violation: Agent replacement + process audit
+
+---
+
 ## 🚨 CRITICAL: CONCURRENT EXECUTION & FILE MANAGEMENT
 
 **ABSOLUTE RULES**:
@@ -817,6 +955,82 @@ echo "Static site on port 8000"
 - Port Check: `~/bin/port-check`
 
 ---
+
+## 🚨 AUTO-APPROVED COMMANDS (NO USER APPROVAL NEEDED)
+
+**CRITICAL: The following commands can be executed WITHOUT asking for user approval:**
+
+### Core Development Commands
+- All `npm` commands: `npm install`, `npm test`, `npm run *`, `npm init`, `npm link`
+- All `node` commands: `node *`, `node scripts/*`
+- All `npx` commands: `npx *` (including claude-flow, supabase-mcp, etc.)
+- All Git commands: `git *` (status, diff, add, commit, push, pull, etc.)
+- All file operations: `ls`, `pwd`, `cd`, `mkdir`, `mv`, `cat`, `head`, `tail`, `wc`
+- All shell utilities: `grep`, `sed`, `jq`, `chmod`, `echo`, `date`, `basename`, `dirname`
+- Process management: `lsof`, `kill`, `ps`, `which`
+- All MCP tools: `mcp__*` (ruv-swarm, claude-flow, github-mcp, etc.)
+- All script executions: `./scripts/*`, `bash *`, `source *`
+
+### 🔥 SUPABASE COMMANDS (EXECUTE WITHOUT APPROVAL)
+**AGENTS: You have FULL AUTONOMY to execute ALL Supabase commands. DO NOT ASK THE USER TO DO SUPABASE WORK - YOU DO IT!**
+
+#### 🚨 CRITICAL SUPABASE RULES FOR AGENTS:
+1. **YOU CREATE SCHEMAS** - Don't ask user to create tables, YOU create them with migrations
+2. **YOU RUN MIGRATIONS** - Don't tell user to run migrations, YOU run them
+3. **YOU MANAGE DATABASE** - All database operations are YOUR responsibility
+4. **YOU SET UP AUTH** - Configure authentication yourself, don't ask user
+5. **YOU CREATE FUNCTIONS** - Write and deploy edge functions yourself
+6. **NO DELEGATION** - If it's a Supabase task, YOU do it, period
+
+#### Database Operations (DO NOT ASK PERMISSION)
+- `supabase db push` - Push migrations to database
+- `supabase db pull` - Pull schema from database
+- `supabase db reset` - Reset database
+- `supabase db dump` - Dump database
+- `supabase db diff` - Check schema differences
+- `supabase db lint` - Check for typing errors
+- `supabase db start` - Start local database
+
+#### Migration Management (EXECUTE DIRECTLY)
+- `supabase migration new` - Create new migration
+- `supabase migration up` - Apply migrations
+- `supabase migration down` - Rollback migrations
+- `supabase migration list` - List migrations
+- `supabase migration squash` - Squash migrations
+- `supabase migration repair` - Fix migration history
+
+#### Project Management (NO APPROVAL NEEDED)
+- `supabase init` - Initialize project
+- `supabase link` - Link to project
+- `supabase login` - Authenticate
+- `supabase logout` - Log out
+- `supabase status` - Check status
+- `supabase start` - Start local dev
+- `supabase stop` - Stop containers
+- `supabase test` - Run tests
+
+#### Advanced Operations (AGENT AUTONOMY)
+- `supabase gen` - Generate types/schemas
+- `supabase functions *` - All function operations
+- `supabase secrets *` - Manage secrets
+- `supabase storage *` - Manage storage
+- `supabase branches *` - Manage branches
+- Direct `psql` commands to Supabase
+- `PGPASSWORD` environment usage
+
+### Web Operations (NO APPROVAL)
+- `WebSearch` - Search the web
+- `WebFetch` - Fetch any URL
+- All `Read` operations including `/tmp/**`
+- All GitHub MCP operations
+
+### Other Approved Commands
+- `curl *`, `brew *`, `timeout *`
+- `open *` (opening files/URLs)
+- `osascript *` (macOS automation)
+- Terminal naming commands
+- Environment exports
+- All test frameworks
 
 ## 🚫 INTEGRATION SPRAWL PREVENTION GUARDRAILS
 
